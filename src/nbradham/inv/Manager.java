@@ -4,13 +4,9 @@ import java.awt.BorderLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
-
 import javax.swing.BoxLayout;
 import javax.swing.DefaultCellEditor;
 import javax.swing.JButton;
-import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
@@ -40,11 +36,10 @@ final class Manager {
 			frame.setLayout(new BorderLayout());
 
 			JMenuBar bar = new JMenuBar();
-			JMenu fileMenu = new JMenu("File"), typeMenu = new JMenu("Type List"), modelMenu = new JMenu("Model List");
+			JMenu fileMenu = new JMenu("File"), typeMenu = new JMenu("Type List");
 			JMenuItem fileNew = new JMenuItem("New"), fileOpen = new JMenuItem("Open"),
 					fileSave = new JMenuItem("Save"), typeAdd = new JMenuItem("Add Type"),
-					typeDel = new JMenuItem("Delete Type"), modelAdd = new JMenuItem("Add Model"),
-					modelDel = new JMenuItem("Delete Model");
+					typeDel = new JMenuItem("Delete Type");
 			fileMenu.add(fileNew);
 			fileMenu.add(fileOpen);
 			fileMenu.add(fileSave);
@@ -95,20 +90,12 @@ final class Manager {
 					diag.add(ok);
 					diag.pack();
 					diag.setVisible(true);
-//					String s = JOptionPane.showInputDialog("Enter type name:");
-//					if (s != null) {
-//						type.addItem(new ItemTable(s));
-//						type.setSelectedIndex(type.getItemCount() - 1);
-//					}
 				}
 			});
 			typeMenu.add(typeAdd);
 
 			typeMenu.add(typeDel);
 			bar.add(typeMenu);
-			modelMenu.add(modelAdd);
-			modelMenu.add(modelDel);
-			bar.add(modelMenu);
 			frame.setJMenuBar(bar);
 
 			DefaultTableModel dtmA = new DefaultTableModel(2, 3);
@@ -117,26 +104,11 @@ final class Manager {
 			JPanel opts = new JPanel();
 			opts.add(new JLabel("Type:"));
 			opts.add(type);
-			JComboBox<ItemModel> model = new JComboBox<>();
-			opts.add(new JLabel("Model:"));
-			opts.add(model);
-			JCheckBox inOffice = new JCheckBox("Only Show Items in Office");
-			opts.add(inOffice);
 			frame.add(opts, BorderLayout.PAGE_START);
 
 			frame.add(new JScrollPane(table), BorderLayout.CENTER);
 			frame.pack();
 			frame.setVisible(true);
-
-			type.addItemListener(new ItemListener() {
-
-				@Override
-				public void itemStateChanged(ItemEvent e) {
-					System.out.println("Item change.");
-					model.removeAllItems();
-					((ItemTable) type.getSelectedItem()).getModels().forEach(m -> model.addItem(m));
-				}
-			});
 		});
 	}
 
