@@ -10,8 +10,8 @@ final class FloatField extends DataField {
 	}
 
 	@Override
-	public Object defVal() {
-		return 0;
+	public Float defVal() {
+		return 0f;
 	}
 
 	@Override

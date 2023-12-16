@@ -10,8 +10,8 @@ final class StringField extends DataField {
 	}
 
 	@Override
-	public Object defVal() {
-		return "";
+	public String defVal() {
+		return null;
 	}
 
 	@Override

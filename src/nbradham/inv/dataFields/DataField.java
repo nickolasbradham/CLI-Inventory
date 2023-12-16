@@ -13,4 +13,8 @@ public abstract class DataField {
 	public abstract Object defVal();
 
 	public abstract String restrictions();
+
+	public String defValStr() {
+		return defVal().toString();
+	};
 }

@@ -1,7 +1,7 @@
 package nbradham.inv;
 
 @FunctionalInterface
-interface Validater {
+public interface Validator {
 
 	boolean isValid(String str);
 }

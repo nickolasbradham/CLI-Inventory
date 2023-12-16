@@ -16,7 +16,7 @@ public final class BooleanField extends DataField {
 	}
 
 	@Override
-	public Object defVal() {
+	public Boolean defVal() {
 		return def;
 	}
 

@@ -10,7 +10,7 @@ final class IntField extends DataField {
 	}
 
 	@Override
-	public Object defVal() {
+	public Byte defVal() {
 		return 0;
 	}
 
