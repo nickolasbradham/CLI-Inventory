@@ -1,8 +1,18 @@
 package nbradham.inv.dataFields;
 
-final class StringField extends DataField {
+import java.util.regex.Pattern;
 
-	static final String TYPE = "string";
+public final class StringField extends DataField {
+
+	public static final String TYPE = "string";
+
+	private final Pattern pat;
+	private final String def;
+
+	public StringField(Pattern regex, String defVal) {
+		pat = regex;
+		def = defVal;
+	}
 
 	@Override
 	public String type() {
@@ -11,11 +21,11 @@ final class StringField extends DataField {
 
 	@Override
 	public String defVal() {
-		return null;
+		return def;
 	}
 
 	@Override
 	public String restrictions() {
-		return "None";
+		return pat.toString();
 	}
 }

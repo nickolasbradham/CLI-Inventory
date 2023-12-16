@@ -4,6 +4,8 @@ import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Scanner;
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
 import javax.swing.JOptionPane;
 
@@ -13,6 +15,7 @@ import nbradham.inv.dataFields.DateField;
 import nbradham.inv.dataFields.FloatField;
 import nbradham.inv.dataFields.IntField;
 import nbradham.inv.dataFields.SelectionField;
+import nbradham.inv.dataFields.StringField;
 
 public final class Manager {
 
@@ -38,9 +41,9 @@ public final class Manager {
 												new Menu(() -> {
 													StringBuilder sb = new StringBuilder("Edit Data Fields (")
 															.append(ic.name())
-															.append(")\n  Field  Type  Default  Restrictions\n------------------------------------\n");
+															.append(")\n  Field  Data Type  Default  Restrictions\n-----------------------------------------\n");
 													fields.forEach((k,
-															v) -> sb.append(String.format("%c %-6s %-5s %-8s %s%n",
+															v) -> sb.append(String.format("%c %-6s %-10s %-8s %s%n",
 																	v == df ? '*' : ' ', k, v.type(), v.defValStr(),
 																	v.restrictions())));
 													return sb.toString();
@@ -105,7 +108,24 @@ public final class Manager {
 																s -> ((String) s).isEmpty()
 																		|| Arrays.binarySearch(vals, s) > -1,
 																"Invalid value. Retry:"));
-														// TODO Continue.
+														break;
+													case StringField.TYPE:
+														String str = getStr(
+																"Enter regex restriction (leave blank for default [.*])",
+																s -> {
+																	try {
+																		Pattern.compile((String) s);
+																	} catch (PatternSyntaxException e) {
+																		return false;
+																	}
+																	return true;
+																}, "Invalid regex. Retry:"),
+																regex = str.isEmpty() ? ".*" : str;
+														field = new StringField(
+																Pattern.compile(regex.isEmpty() ? ".*" : regex),
+																getStr(String.format("Enter Default value:"),
+																		s -> Pattern.matches(regex, (CharSequence) s),
+																		"Invalid value. Retry:"));
 													}
 													fields.put(fName, field);
 												})).open();
@@ -117,10 +137,10 @@ public final class Manager {
 
 	public static String getStr(String prompt, Validator v, String retry) {
 		System.out.println(prompt);
-		String name;
-		while (!v.isValid(name = SCAN.nextLine()))
+		String str;
+		while (!v.isValid(str = SCAN.nextLine()))
 			System.out.println(retry);
-		return name;
+		return str;
 	}
 
 	private static float getFlt(String prompt, float defaultVal, Validator v) {
