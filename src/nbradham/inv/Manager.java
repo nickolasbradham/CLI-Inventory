@@ -52,6 +52,7 @@ final class Manager {
 																s -> s.equals("t") | s.equals("f"),
 																"Invalid value. Enter Default Value (f/t): ")
 																.equals("t"));
+														// TODO Continue.
 													}
 													fields.put(fName, field);
 												})).open();
