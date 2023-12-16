@@ -1,8 +1,16 @@
 package nbradham.inv.dataFields;
 
-final class IntField extends DataField {
+public final class IntField extends DataField {
 
-	static final String TYPE = "int";
+	public static final String TYPE = "int";
+
+	private final int min, max, def;
+
+	public IntField(int setMin, int setMax, int setDefault) {
+		min = setMin;
+		max = setMax;
+		def = setDefault;
+	}
 
 	@Override
 	public String type() {
@@ -10,12 +18,12 @@ final class IntField extends DataField {
 	}
 
 	@Override
-	public Byte defVal() {
-		return 0;
+	public Integer defVal() {
+		return def;
 	}
 
 	@Override
 	public String restrictions() {
-		return String.format("[%d, %d]", Byte.MIN_VALUE, Byte.MAX_VALUE);
+		return String.format("[%d, %d]", min, max);
 	}
 }

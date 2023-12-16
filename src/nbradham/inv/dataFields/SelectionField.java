@@ -1,8 +1,17 @@
 package nbradham.inv.dataFields;
 
-final class SelectionField extends DataField {
+import java.util.Arrays;
 
-	static final String TYPE = "selection";
+public final class SelectionField extends DataField {
+
+	public static final String TYPE = "select";
+
+	private final String[] vals;
+	private final int def;
+
+	public SelectionField(String[] values, String setDefault) {
+		def = Arrays.binarySearch(vals = values, setDefault);
+	}
 
 	@Override
 	public String type() {
@@ -11,11 +20,11 @@ final class SelectionField extends DataField {
 
 	@Override
 	public Object defVal() {
-		return null;
+		return vals[def];
 	}
 
 	@Override
 	public String restrictions() {
-		return "[]";
+		return Arrays.toString(vals);
 	}
 }

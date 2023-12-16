@@ -1,6 +1,7 @@
 package nbradham.inv;
 
 import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Scanner;
 
@@ -10,6 +11,8 @@ import nbradham.inv.dataFields.BooleanField;
 import nbradham.inv.dataFields.DataField;
 import nbradham.inv.dataFields.DateField;
 import nbradham.inv.dataFields.FloatField;
+import nbradham.inv.dataFields.IntField;
+import nbradham.inv.dataFields.SelectionField;
 
 public final class Manager {
 
@@ -18,7 +21,6 @@ public final class Manager {
 	private final HashMap<String, ItemCategory> cats = new HashMap<>();
 
 	private void start() {
-		System.out.println(DataField.TYPES);
 		Menu main = new Menu("Inventory Manager",
 				new Option("Edit Item Categories",
 						() -> new Menu(() -> String.format("Edit Item Categories%n%s%n", cats.keySet()),
@@ -49,7 +51,8 @@ public final class Manager {
 													if (fName.isEmpty())
 														return;
 													DataField field = null;
-													switch (getStr("Enter Field Type [bool, date, float]:",
+													switch (getStr(
+															String.format("Enter Field Type %s:", DataField.TYPES),
 															s -> DataField.TYPES.contains(s), "Invalid Type. Retry:")) {
 													case BooleanField.TYPE:
 														field = new BooleanField(getStr("Enter Default Value (f/t):",
@@ -82,6 +85,26 @@ public final class Manager {
 																		f -> (float) f >= min);
 														field = new FloatField(min, max, getFlt("Default", 0,
 																f -> (float) f >= min && (float) f <= max));
+														break;
+													case IntField.TYPE:
+														int iMin = getInt("Minimum", Integer.MIN_VALUE, f -> true),
+																iMax = getInt("Maximum", Integer.MAX_VALUE,
+																		f -> (int) f >= iMin);
+														field = new IntField(iMin, iMax, getInt("Default", 0,
+																i -> (int) i >= iMin && (int) i <= iMax));
+														break;
+													case SelectionField.TYPE:
+														String[] vals = getStr(
+																"Enter options split by semicolon (At least two options required):",
+																s -> ((String) s).split(";").length > 1,
+																"Only one option detected. Try again:").split(";");
+														Arrays.sort(vals);
+														field = new SelectionField(vals, getStr(String.format(
+																"Enter Default value (leave blank for default [%s]):",
+																vals[0]),
+																s -> ((String) s).isEmpty()
+																		|| Arrays.binarySearch(vals, s) > -1,
+																"Invalid value. Retry:"));
 														// TODO Continue.
 													}
 													fields.put(fName, field);
@@ -96,7 +119,7 @@ public final class Manager {
 		System.out.println(prompt);
 		String name;
 		while (!v.isValid(name = SCAN.nextLine()))
-			System.out.println("Invalid value. Retry:");
+			System.out.println(retry);
 		return name;
 	}
 
@@ -110,6 +133,18 @@ public final class Manager {
 			}
 		}, "Invalid value. Retry:");
 		return str.isEmpty() ? defaultVal : Float.parseFloat(str);
+	}
+
+	private static int getInt(String prompt, int defaultVal, Validator v) {
+		String str = getStr(String.format("Enter %s value (leave blank for default [%d]):", prompt, defaultVal), s -> {
+			try {
+				int i = Integer.parseInt((String) s);
+				return v.isValid(i);
+			} catch (NumberFormatException e) {
+				return ((String) s).isEmpty();
+			}
+		}, "Invalid value. Retry:");
+		return str.isEmpty() ? defaultVal : Integer.parseInt(str);
 	}
 
 	public static void main(String[] args) {
