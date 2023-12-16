@@ -2,6 +2,8 @@ package nbradham.inv;
 
 import java.util.HashMap;
 
+import nbradham.inv.dataFields.DataField;
+
 final class ItemCategory {
 
 	private final String name;
