@@ -46,9 +46,9 @@ public final class DateField extends DataField {
 				title, getterToStrable(defaultVal), S_NOW, DG_CUR.getDate(), S_CUR), s -> {
 					LocalDate ld;
 					try {
-						ld = LocalDate.parse(s);
+						ld = LocalDate.parse((CharSequence) s);
 					} catch (DateTimeParseException e) {
-						boolean empty = s.isEmpty();
+						boolean empty = ((String) s).isEmpty();
 						return (s.equals(S_NOW) || s.equals(S_CUR) || empty) && addCheck
 								.isValid(empty ? defaultVal.getDate().toString() : LocalDate.now().toString());
 					}

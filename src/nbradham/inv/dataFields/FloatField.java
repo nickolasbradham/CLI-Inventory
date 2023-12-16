@@ -1,8 +1,16 @@
 package nbradham.inv.dataFields;
 
-final class FloatField extends DataField {
+public final class FloatField extends DataField {
 
-	static final String TYPE = "float";
+	public static final String TYPE = "float";
+
+	private final float min, max, def;
+
+	public FloatField(float setMin, float setMax, float setDefault) {
+		min = setMin;
+		max = setMax;
+		def = setDefault;
+	}
 
 	@Override
 	public String type() {
@@ -11,11 +19,11 @@ final class FloatField extends DataField {
 
 	@Override
 	public Float defVal() {
-		return 0f;
+		return def;
 	}
 
 	@Override
 	public String restrictions() {
-		return String.format("[%f, %f]", Float.NEGATIVE_INFINITY, Float.POSITIVE_INFINITY);
+		return String.format("[%f, %f]", min, max);
 	}
 }
