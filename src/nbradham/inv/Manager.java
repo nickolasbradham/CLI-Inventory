@@ -112,6 +112,7 @@ public final class Manager {
 			});
 			field.setBackground(Color.BLACK);
 			field.setForeground(Color.WHITE);
+			field.setCaretColor(Color.LIGHT_GRAY);
 			JLabel lab = new JLabel(">");
 			lab.setForeground(Color.WHITE);
 			JPanel pane = new JPanel(new BorderLayout());
