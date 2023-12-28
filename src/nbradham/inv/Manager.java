@@ -30,54 +30,50 @@ public final class Manager {
 				public final void keyTyped(KeyEvent e) {
 					switch (e.getKeyChar()) {
 					case '\n':
-						s = field.getText().trim();
-						box.append('\n' + s);
-						box.setCaretPosition(box.getDocument().getLength());
+						println(s = field.getText());
 						field.setText("");
-						hist.add(s);
-						pos = 0;
+						hist.add(s.trim());
+						pos = -1;
 						switch (nextChar()) {
 						case 'a':
-							switch (nextChar()) {
-							case 'c':
-								if (catagories.containsKey(s = token()))
-									System.out.println("Category already exists.");
-								else
-									catagories.put(s, new Category());
-								System.out.printf("'%s'%n", s);
+							if ((s = token()).isBlank()) {
+								println("Must specify a category name.");
 								break;
-							case '\r':
-								System.out.println("Missing more input. Use 'ha' for help.");
-								break;
-							default:
-								System.out.println("(Add) Unknown type.");
 							}
+							if (catagories.containsKey(s))
+								println("Category already exists.");
+							else
+								catagories.put(s, new Category());
+							println(catagories.toString());
 							break;
 						case 'h':
 							switch (nextChar()) {
+							case 'a':
+								println("(a)dd - Adds a category of item.\n  Usage: a<newCatagory>");
+								break;
 							case 'h':
-								System.out.println("(h)elp - Gives help on commands.\n  Usage: h[command]");
+								println("(h)elp - Gives help on commands.\n  Usage: h[command]");
 								break;
 							case 'q':
-								System.out.println("(q)uit - Quits the program.");
+								println("(q)uit - Quits the program.");
 								break;
-							case '\r':
-								System.out.println(
-										"Commands are single characters and extra flags are not seperated by spaces.\nParameters are split by spaces and quotes are used to enter strings containing spaces.\nUse h[command] for details on a specific command.\n  Example: 'hq' shows help on the quit command.\nAvailable commands:\n  (h)elp - Shows this prompt.\n  (q)uit - Quits the program.");
+							case '\n':
+								println("Commands are single characters and extra flags are not seperated by spaces.\nParameters are split by spaces and quotes are used to enter strings containing spaces.\nUse h[command] for details on a specific command.\n  Example: 'hq' shows help on the quit command.\nAvailable commands:\n  (a)dd - Adds an item category.\n  (h)elp - Shows this prompt.\n  (q)uit - Quits the program.");
 								break;
 							default:
-								System.out.println("(Help) Unknown command.");
+								println("(Help) Unknown command.");
 							}
 							break;
 						case 'q':
 							frame.dispose();
 							break;
 						default:
-							System.out.println("Unknown command. Use 'h' for help.");
+							println("Unknown command. Use 'h' for help.");
 						}
+						box.setCaretPosition(box.getDocument().getLength());
 						break;
 					case '\t':
-						field.setText(field.getText().trim() + "auto");
+						// TODO: Auto complete.
 					}
 					com = hist.size();
 				}
@@ -102,7 +98,12 @@ public final class Manager {
 				private String token() {
 					int i;
 					return s.charAt(++pos) == '\'' ? s.substring(++pos, pos = s.indexOf('\'', pos))
-							: s.substring(++pos, pos = (i = s.indexOf(' ', pos)) > -1 ? i : s.length());
+							: s.substring(pos++, pos = (i = s.indexOf(' ', pos)) > -1 ? i : s.length());
+				}
+
+				private void println(String str) {
+					box.append("\n");
+					box.append(str.trim());
 				}
 			});
 			frame.add(field, BorderLayout.PAGE_END);
