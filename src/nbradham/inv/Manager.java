@@ -1,11 +1,14 @@
 package nbradham.inv;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.HashMap;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.SwingUtilities;
@@ -13,11 +16,13 @@ import javax.swing.SwingUtilities;
 public final class Manager {
 	private void start() {
 		SwingUtilities.invokeLater(() -> {
-			JFrame frame = new JFrame();
+			JFrame frame = new JFrame("Inventory Manager");
 			frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 			frame.setLayout(new BorderLayout());
-			JTextArea box = new JTextArea("Ready.");
+			JTextArea box = new JTextArea("Ready.", 20, 50);
 			box.setEditable(false);
+			box.setBackground(Color.BLACK);
+			box.setForeground(Color.WHITE);
 			frame.add(new JScrollPane(box), BorderLayout.CENTER);
 			JTextArea field = new JTextArea();
 			field.addKeyListener(new KeyAdapter() {
@@ -44,7 +49,6 @@ public final class Manager {
 								println("Category already exists.");
 							else
 								catagories.put(s, new Category());
-							println(catagories.toString());
 							break;
 						case 'h':
 							switch (nextChar()) {
@@ -61,7 +65,7 @@ public final class Manager {
 								println("Commands are single characters and extra flags are not seperated by spaces.\nParameters are split by spaces and quotes are used to enter strings containing spaces.\nUse h[command] for details on a specific command.\n  Example: 'hq' shows help on the quit command.\nAvailable commands:\n  (a)dd - Adds an item category.\n  (h)elp - Shows this prompt.\n  (q)uit - Quits the program.");
 								break;
 							default:
-								println("(Help) Unknown command.");
+								println("(Help) Unknown command. Use 'h' for help.");
 							}
 							break;
 						case 'q':
@@ -106,9 +110,16 @@ public final class Manager {
 					box.append(str.trim());
 				}
 			});
-			frame.add(field, BorderLayout.PAGE_END);
+			field.setBackground(Color.BLACK);
+			field.setForeground(Color.WHITE);
+			JLabel lab = new JLabel(">");
+			lab.setForeground(Color.WHITE);
+			JPanel pane = new JPanel(new BorderLayout());
+			pane.setBackground(Color.BLACK);
+			pane.add(lab, BorderLayout.WEST);
+			pane.add(field, BorderLayout.CENTER);
+			frame.add(pane, BorderLayout.SOUTH);
 			frame.pack();
-			frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
 			frame.setVisible(true);
 			field.requestFocus();
 		});
