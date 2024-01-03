@@ -14,6 +14,7 @@ import javax.swing.JTextArea;
 import javax.swing.SwingUtilities;
 
 public final class Manager {
+
 	private void start() {
 		SwingUtilities.invokeLater(() -> {
 			JFrame frame = new JFrame("Inventory Manager");
@@ -28,27 +29,45 @@ public final class Manager {
 			field.addKeyListener(new KeyAdapter() {
 				private final HashMap<String, Category> catagories = new HashMap<>();
 				private final ArrayList<String> hist = new ArrayList<>();
-				private String s;
+				private Category sel;
+				private String str0;
 				int com, pos;
 
 				@Override
 				public final void keyTyped(KeyEvent e) {
 					switch (e.getKeyChar()) {
 					case '\n':
-						println(s = field.getText());
+						println(str0 = field.getText());
 						field.setText("");
-						hist.add(s.trim());
+						hist.add(str0.trim());
 						pos = -1;
 						switch (nextChar()) {
 						case 'a':
-							if ((s = token()).isBlank()) {
-								println("Must specify a category name.");
+							switch (nextChar()) {
+							case 'c':
+								if ((str0 = token()).isBlank()) {
+									println("Must specify a category name.");
+									break;
+								}
+								if (catagories.containsKey(str0))
+									println("Category already exists.");
+								else
+									catagories.put(str0, sel = new Category());
 								break;
+							case 'f':
+								if (!(sel instanceof Category)) {
+									println("Category not selected. Use s<Category> to select a category.");
+									break;
+								}
+								if ((str0 = token()).isBlank()) {
+									println("Must specify a field name.");
+									break;
+								}
+								// TODO: Build field.
+								break;
+							default:
+								println("(Add) Unknown type. Use 'ha' for help.");
 							}
-							if (catagories.containsKey(s))
-								println("Category already exists.");
-							else
-								catagories.put(s, new Category());
 							break;
 						case 'h':
 							switch (nextChar()) {
@@ -96,13 +115,13 @@ public final class Manager {
 				}
 
 				private char nextChar() {
-					return s.charAt(++pos);
+					return str0.charAt(++pos);
 				}
 
 				private String token() {
 					int i;
-					return s.charAt(++pos) == '\'' ? s.substring(++pos, pos = s.indexOf('\'', pos))
-							: s.substring(pos++, pos = (i = s.indexOf(' ', pos)) > -1 ? i : s.length());
+					return str0.charAt(++pos) == '\'' ? str0.substring(++pos, pos = str0.indexOf('\'', pos))
+							: str0.substring(pos++, pos = (i = str0.indexOf(' ', pos)) > -1 ? i : str0.length());
 				}
 
 				private void println(String str) {
