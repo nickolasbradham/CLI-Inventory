@@ -1,11 +1,12 @@
 package nbradham.inv;
 
-import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.FlowLayout;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
-import java.util.HashMap;
+
+import javax.swing.BoxLayout;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -19,85 +20,45 @@ public final class Manager {
 		SwingUtilities.invokeLater(() -> {
 			JFrame frame = new JFrame("Inventory Manager");
 			frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-			frame.setLayout(new BorderLayout());
+			frame.setLayout(new BoxLayout(frame.getContentPane(), BoxLayout.PAGE_AXIS));
 			JTextArea box = new JTextArea("Ready.", 20, 50);
 			box.setEditable(false);
 			box.setBackground(Color.BLACK);
 			box.setForeground(Color.WHITE);
-			frame.add(new JScrollPane(box), BorderLayout.CENTER);
-			JTextArea field = new JTextArea();
-			field.addKeyListener(new KeyAdapter() {
-				private final HashMap<String, Category> catagories = new HashMap<>();
+			box.setLineWrap(true);
+			box.setWrapStyleWord(true);
+			frame.add(new JScrollPane(box, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
+					JScrollPane.HORIZONTAL_SCROLLBAR_NEVER));
+			JTextArea entryField = new JTextArea(), optField = new JTextArea();
+			entryField.addKeyListener(new KeyAdapter() {
+				private static final String[] COMMANDS = { "Type", "Item", "Help", "Test" };
 				private final ArrayList<String> hist = new ArrayList<>();
-				private Category sel;
 				private String str0;
-				int com, pos;
+				int com;
 
 				@Override
 				public final void keyTyped(KeyEvent e) {
+
 					switch (e.getKeyChar()) {
-					case '\n':
-						println(str0 = field.getText());
-						field.setText("");
-						hist.add(str0.trim());
-						pos = -1;
-						switch (nextChar()) {
-						case 'a':
-							switch (nextChar()) {
-							case 'c':
-								if ((str0 = token()).isBlank()) {
-									println("Must specify a category name.");
-									break;
-								}
-								if (catagories.containsKey(str0))
-									println("Category already exists.");
-								else
-									catagories.put(str0, sel = new Category());
-								break;
-							case 'f':
-								if (!(sel instanceof Category)) {
-									println("Category not selected. Use s<Category> to select a category.");
-									break;
-								}
-								if ((str0 = token()).isBlank()) {
-									println("Must specify a field name.");
-									break;
-								}
-								// TODO: Build field.
-								break;
-							default:
-								println("(Add) Unknown type. Use 'ha' for help.");
-							}
-							break;
-						case 'h':
-							switch (nextChar()) {
-							case 'a':
-								println("(a)dd - Adds a category of item.\n  Usage: a<newCatagory>");
-								break;
-							case 'h':
-								println("(h)elp - Gives help on commands.\n  Usage: h[command]");
-								break;
-							case 'q':
-								println("(q)uit - Quits the program.");
-								break;
-							case '\n':
-								println("Commands are single characters and extra flags are not seperated by spaces.\nParameters are split by spaces and quotes are used to enter strings containing spaces.\nUse h[command] for details on a specific command.\n  Example: 'hq' shows help on the quit command.\nAvailable commands:\n  (a)dd - Adds an item category.\n  (h)elp - Shows this prompt.\n  (q)uit - Quits the program.");
-								break;
-							default:
-								println("(Help) Unknown command. Use 'h' for help.");
-							}
-							break;
-						case 'q':
-							frame.dispose();
-							break;
-						default:
-							println("Unknown command. Use 'h' for help.");
-						}
-						box.setCaretPosition(box.getDocument().getLength());
-						break;
-					case '\t':
-						// TODO: Auto complete.
+					case '\n' -> {
+						println(str0 = entryField.getText());
+						entryField.setText("");
+						hist.add(str0);
+						System.out.printf("Submit: %s%n", str0);
 					}
+					case '\t' -> {
+						System.out.println("Tabbed.");
+						int pos = entryField.getCaretPosition() - 1;
+						String text = entryField.getText();
+						entryField.setText(text.substring(0, pos) + text.substring(pos + 1));
+						entryField.setCaretPosition(pos);
+					}
+					}
+					StringBuilder optBuild = new StringBuilder("Options:");
+					for (String s : COMMANDS)
+						if (s.startsWith(entryField.getText()))
+							optBuild.append("  ").append(s);
+					optField.setText(optBuild.toString());
 					com = hist.size();
 				}
 
@@ -106,22 +67,12 @@ public final class Manager {
 					switch (e.getKeyCode()) {
 					case KeyEvent.VK_UP:
 						if (com > 0)
-							field.setText(hist.get(--com));
+							entryField.setText(hist.get(--com));
 						break;
 					case KeyEvent.VK_DOWN:
 						if (com < hist.size() - 1)
-							field.setText(hist.get(++com));
+							entryField.setText(hist.get(++com));
 					}
-				}
-
-				private char nextChar() {
-					return str0.charAt(++pos);
-				}
-
-				private String token() {
-					int i;
-					return str0.charAt(++pos) == '\'' ? str0.substring(++pos, pos = str0.indexOf('\'', pos))
-							: str0.substring(pos++, pos = (i = str0.indexOf(' ', pos)) > -1 ? i : str0.length());
 				}
 
 				private void println(String str) {
@@ -129,19 +80,22 @@ public final class Manager {
 					box.append(str.trim());
 				}
 			});
-			field.setBackground(Color.BLACK);
-			field.setForeground(Color.WHITE);
-			field.setCaretColor(Color.LIGHT_GRAY);
+			entryField.setBackground(Color.BLACK);
+			entryField.setForeground(Color.WHITE);
+			entryField.setCaretColor(Color.LIGHT_GRAY);
 			JLabel lab = new JLabel(">");
 			lab.setForeground(Color.WHITE);
-			JPanel pane = new JPanel(new BorderLayout());
+			JPanel pane = new JPanel(new FlowLayout(FlowLayout.LEFT));
 			pane.setBackground(Color.BLACK);
-			pane.add(lab, BorderLayout.WEST);
-			pane.add(field, BorderLayout.CENTER);
-			frame.add(pane, BorderLayout.SOUTH);
+			pane.add(lab);
+			optField.setBackground(Color.BLACK);
+			optField.setForeground(Color.GRAY);
+			pane.add(entryField);
+			frame.add(pane);
+			frame.add(optField);
 			frame.pack();
 			frame.setVisible(true);
-			field.requestFocus();
+			entryField.requestFocus();
 		});
 	}
 
